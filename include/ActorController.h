@@ -2,27 +2,32 @@
 #include "GameMode.h"
 #define ACTORCONTROLLER_H
 
+class Actor;
 
 class ActorController
 {
     public:
-        ActorController();
+        ActorController(Actor*);
         virtual ~ActorController();
 
         PVector GetControlledActorLocation();
-        PVector GetControlledActorLastLocation();
         PVector GetControlledActorRotation();
         std::string GetSprite();
 
+        void Tick();
+        void SetAutoMovement(bool);
         void SetActorLocation(PVector Location);
         void SetActorRotation(PVector Rotation);
         void SetGamemodePtr(GameMode* newGamemodePtr);
-        void SetupInput(const char* PlayerInput);
+        void SetupInput(int PlayerInput);
+        void Die();
 
-    private:
+    protected:
+        void AutoMovement();
         bool MovementPossibility(PVector PossibleLocation);
-        class Actor* Tank = nullptr;
+        Actor* Controller = nullptr;
         GameMode* GamemodePtr = nullptr;
+        bool AutoMovement_b = false;
 };
 
 #endif // ACTORCONTROLLER_H

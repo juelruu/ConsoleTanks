@@ -14,13 +14,10 @@ int main()
     {
         case 1:
             GameMode* Game = new GameMode(0);
-            std::thread Input(&GameMode::SetPlayerInput, Game);
             while(Game->GetGameStatus())
             {
                 Game->Play();
             }
-
-            Input.join();
             break;
     }
 

@@ -3,9 +3,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <thread>
+#include <conio.h>
+#include <ctype.h>
 #include <string.h>
-#define Srite std::vector<std::string>
+#include <windows.h>
 #endif // CUSTOM_STRUCT_H
 
 
@@ -20,6 +21,11 @@ struct PVector
         X = x;
         Y = y;
     };
+
+    std::string ToString()
+    {
+        return "X: " + std::to_string(X) + " Y: " + std::to_string(Y);
+    }
 
     void operator + (PVector Object)
     {
@@ -43,5 +49,11 @@ struct PVector
     {
         X -= Object.X;
         Y -= Object.Y;
+    }
+
+    void operator = (PVector Object)
+    {
+        X = Object.X;
+        Y = Object.Y;
     }
 };

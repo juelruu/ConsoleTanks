@@ -11,6 +11,8 @@ class GameMode
         virtual ~GameMode();
 
         void Play();
+        void AddActor(class Actor* newActor);
+        void DeleteActor(class ActorController* DController);
         bool GetGameStatus();
         void SetPlayerInput();
         bool MovementPossibility(PVector PossibleLocation);
@@ -26,7 +28,7 @@ class GameMode
         bool GameStatus = true;
 
         std::vector<ActorController*> Actors;
-        char* InputBuffer = new char[1];
+        int InputBuffer;
 };
 
 #endif // GAMEMODE_H

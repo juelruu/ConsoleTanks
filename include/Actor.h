@@ -15,11 +15,10 @@ class Actor
         void SetActorRotation(PVector newRotation);
 
         PVector GetActorLocation();
-        PVector GetActorLastLocation();
         PVector GetActorRotation();
-        std::string GetSprite();
+        virtual std::string GetSprite();
 
-    private:
+    protected:
         // ========Sprite========
         std::vector<std::string> VerticalSprite;
         std::vector<std::string> HorizontalSprite;
@@ -27,12 +26,8 @@ class Actor
 
         // ========Position========
         PVector Location;
-        PVector LastLocation;
         PVector Rotaion;
         // ======================
-
-
-
 
         bool MovementPossibility(PVector MovementVector);
 

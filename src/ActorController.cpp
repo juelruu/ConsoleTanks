@@ -1,73 +1,86 @@
 #include "ActorController.h"
 #include "Actor.h"
+#include "Projectile.h"
 
-ActorController::ActorController()
+ActorController::ActorController(Actor* newActor = nullptr)
 {
-    Tank = new Actor;
+    if(newActor != nullptr)
+        Controller = newActor;
+    else
+        Controller = new Actor;
 }
 
 ActorController::~ActorController()
 {
-    delete[] Tank;
+    delete[] Controller;
 }
 
-void ActorController::SetupInput(const char* PlayerInput)
+void ActorController::SetupInput(int PlayerInput)
 {
     PVector tmpLocation;
     PVector tmpRotation;
-    if(strcmp(PlayerInput, "w"))
+
+    switch(PlayerInput)
     {
-        tmpLocation = Tank->GetActorLocation();
+    case 235:
+        tmpLocation = Controller->GetActorLocation();
         tmpRotation = PVector(0, 1);
 
-        Tank->SetActorRotation(tmpRotation);
-
         tmpLocation += tmpRotation;
-    }
-    else if(strcmp(PlayerInput, "s"))
-    {
-        tmpLocation = Tank->GetActorLocation();
+        break;
+    case 230:
+        tmpLocation = Controller->GetActorLocation();
         tmpRotation = PVector(0, -1);
 
-        Tank->SetActorRotation(tmpRotation);
-
         tmpLocation += tmpRotation;
-    }
-    else if(strcmp(PlayerInput, "a"))
-    {
-        tmpLocation = Tank->GetActorLocation();
+        break;
+
+    case 228:
+        tmpLocation = Controller->GetActorLocation();
         tmpRotation = PVector(-1, 0);
 
-        Tank->SetActorRotation(tmpRotation);
-
         tmpLocation += tmpRotation;
-    }
+        tmpLocation += tmpRotation;
+        break;
 
-    else if(strcmp(PlayerInput, "d"))
-    {
-        tmpLocation = Tank->GetActorLocation();
+    case 162:
+        tmpLocation = Controller->GetActorLocation();
         tmpRotation = PVector(1, 0);
 
-        Tank->SetActorRotation(tmpRotation);
-
         tmpLocation += tmpRotation;
+        tmpLocation += tmpRotation;
+        break;
+
+    case 32:{
+        tmpLocation = Controller->GetActorLocation();
+        tmpRotation = Controller->GetActorRotation();
+
+        Projectile* proj = new Projectile;
+        PVector projetileLocation = tmpLocation;
+        projetileLocation += tmpRotation;
+        projetileLocation += tmpRotation;
+
+        proj->SetActorLocation(projetileLocation);
+        proj->SetActorRotation(tmpRotation);
+
+        if(MovementPossibility(projetileLocation))
+            GamemodePtr->AddActor(proj);
+        break;
     }
-    else
-    {
-        std::cout << PlayerInput << std::endl;
+
+    default:
+        tmpLocation = Controller->GetActorLocation();
+        tmpRotation = Controller->GetActorRotation();
+        break;
     }
 
     if(MovementPossibility(tmpLocation))
     {
-        Tank->SetActorLocation(tmpLocation);
-        std::cout << tmpLocation.X << std::endl;
-        //system("pause > nul");
+        if(PlayerInput == 162 or PlayerInput == 228)
+            tmpLocation -= tmpRotation;
+        Controller->SetActorLocation(tmpLocation);
+        Controller->SetActorRotation(tmpRotation);
     }
-}
-
-PVector ActorController::GetControlledActorLastLocation()
-{
-    return Tank->GetActorLastLocation();
 }
 
 bool ActorController::MovementPossibility(PVector PossibleLocation)
@@ -82,25 +95,51 @@ void ActorController::SetGamemodePtr(GameMode* newGamemodePtr)
 
 PVector ActorController::GetControlledActorLocation()
 {
-    return Tank->GetActorLocation();
+    return Controller->GetActorLocation();
 }
 
 PVector ActorController::GetControlledActorRotation()
 {
-    return Tank->GetActorRotation();
+    return Controller->GetActorRotation();
 }
 
 void ActorController::SetActorLocation(PVector Location)
 {
-    Tank->SetActorLocation(Location);
+    Controller->SetActorLocation(Location);
 }
 
 void ActorController::SetActorRotation(PVector Rotation)
 {
-    Tank->SetActorRotation(Rotation);
+    Controller->SetActorRotation(Rotation);
 }
 
 std::string ActorController::GetSprite()
 {
-    return Tank->GetSprite();
+    return Controller->GetSprite();
+}
+
+void ActorController::SetAutoMovement(bool var)
+{
+    AutoMovement_b = var;
+}
+
+void ActorController::Tick()
+{
+    if(AutoMovement_b)
+        AutoMovement();
+}
+
+void ActorController::AutoMovement()
+{
+    PVector tmpLocation = GetControlledActorLocation();
+    tmpLocation += GetControlledActorRotation();
+    tmpLocation += GetControlledActorRotation();
+    if(MovementPossibility(tmpLocation))
+        SetActorLocation(tmpLocation);
+    else
+        Die();
+}
+void ActorController::Die()
+{
+    GamemodePtr->DeleteActor(this);
 }

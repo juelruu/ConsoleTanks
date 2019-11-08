@@ -15,18 +15,12 @@ Actor::~Actor()
 
 void Actor::SetActorLocation(PVector newLocation)
 {
-    LastLocation = Location;
     Location = newLocation;
 }
 
 void Actor::SetActorRotation(PVector newRotation)
 {
     Rotaion = newRotation;
-}
-
-PVector Actor::GetActorLastLocation()
-{
-    return LastLocation;
 }
 
 PVector Actor::GetActorLocation()

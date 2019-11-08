@@ -40,11 +40,13 @@
 		<Unit filename="include/CustomStructures.h" />
 		<Unit filename="include/GameMode.h" />
 		<Unit filename="include/Map.h" />
+		<Unit filename="include/Projectile.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/Actor.cpp" />
 		<Unit filename="src/ActorController.cpp" />
 		<Unit filename="src/GameMode.cpp" />
 		<Unit filename="src/Map.cpp" />
+		<Unit filename="src/Projectile.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
