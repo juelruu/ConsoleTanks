@@ -18,6 +18,8 @@ class Actor
         PVector GetActorRotation();
         virtual std::string GetSprite();
 
+        bool GetMoveStatus();
+
     protected:
         // ========Sprite========
         std::vector<std::string> VerticalSprite;
@@ -30,6 +32,7 @@ class Actor
         // ======================
 
         bool MovementPossibility(PVector MovementVector);
+        bool AutoMove_b = false;
 
 };
 

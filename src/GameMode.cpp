@@ -1,6 +1,8 @@
 #include "GameMode.h"
 #include "Map.h"
 #include "ActorController.h"
+#include "Projectile.h"
+#include <bits/stdc++.h>
 
 GameMode::GameMode(int EnemiesCount)
 {
@@ -11,14 +13,17 @@ GameMode::GameMode(int EnemiesCount)
     PlayerController->SetGamemodePtr(this);
     PlayerController->SetActorRotation(PVector(0, 1));
 
+    std::vector<PVector> Locs = {PVector(6, 1), PVector(11, 1), PVector(20, 1)};
+
     Actors.push_back(PlayerController);
     for(int i = 0; i < EnemiesCount; i++)
-        {
-            ActorController* EnemyController = new ActorController(nullptr);
-            EnemyController->SetActorLocation(PVector(1, 4));
-            EnemyController->SetActorRotation(PVector(0, 1));
-            Actors.push_back(EnemyController);
-        }
+    {
+        ActorController* EnemyController = new ActorController(nullptr);
+        EnemyController->SetActorLocation(Locs[i]);
+        EnemyController->SetActorRotation(PVector(0, 1));
+        EnemyController->SetGamemodePtr(this);
+        Actors.push_back(EnemyController);
+    }
 
     GameMap = MapClass->GetMap();
 }
@@ -34,25 +39,34 @@ void GameMode::Play()
 {
     system("cls");
     GameMap = MapClass->GetMap();
+
     if(_kbhit())
         SetPlayerInput();
 
-    PlayerController->SetupInput(InputBuffer);
-    for(unsigned int i = 0; i < Actors.size(); i++)
+    for(auto &x: nActor)
     {
-        Actors[i]->Tick();
-        UpdateActor(Actors[i]);
+        Actors.push_back(new ActorController(x));
+        Actors.back()->SetGamemodePtr(this);
     }
 
+    for(auto &i: Actors)
+    {
+        UpdateActor(i);
+    }
     for(unsigned int i = 0; i < GameMap.size(); i++)
     {
         std::cout << GameMap[i] << std::endl;
     }
-    //Sleep(1000);
+    nActor.clear();
+
+    std::cout << Actors.size() << std::endl;
+
 }
 
 void GameMode::UpdateActor(ActorController* Controller)
 {
+    Controller->Tick();
+
     PVector tmpLocation = Controller->GetControlledActorLocation();
     std::string tmpSprite = Controller->GetSprite();
 
@@ -69,11 +83,9 @@ void GameMode::UpdateActor(ActorController* Controller)
     }
 }
 
-void GameMode::AddActor(Actor* newActor)
+void GameMode::AddActor(PVector Loc, PVector Rot)
 {
-    ActorController* newController = new ActorController(newActor);
-    newController->SetAutoMovement(true);
-    Actors.push_back(newController);
+    nActor.push_back(new Projectile(Loc, Rot));
 }
 
 bool GameMode::GetGameStatus()
@@ -85,24 +97,38 @@ void GameMode::SetPlayerInput()
 {
     InputBuffer = getch();
     PlayerController->SetupInput(InputBuffer);
+    InputBuffer = 0;
 }
 
 bool GameMode::MovementPossibility(PVector PossibleLocation)
 {
-    std::string str = GameMap[PossibleLocation.Y];
+    //std::cout << "GNOTHING" << "-" << PossibleLocation.Y << std::endl;
+    if(PossibleLocation.Y > -1 and PossibleLocation.Y < this->GameMap.size())
+    {
+        //std::cout << "IFNOTHING" << std::endl;
+        std::string str = GameMap[PossibleLocation.Y];
 
-    if(str.compare(PossibleLocation.X, 1, " ") == 0)
-        return true;
-    else
-        return false;
+        if(str.compare(PossibleLocation.X, 1, " ") == 0)
+        {
+            //std::cout << "ifNOTHING" << std::endl;
+            return true;
+        }
+        else
+        {
+            //std::cout << "elseNOTHING" << std::endl;
+            return false;
+        }
+    }
+    //else
+        //std::cout << "End of str" << std::endl;
 
-
+    return false;
 }
 void GameMode::DeleteActor(ActorController* DController)
 {
-    for(auto &i: Actors)
+    auto i = std::find(Actors.begin(), Actors.end(), DController);
+    if(i != Actors.end())
     {
-        if(i == DController)
-            delete i;
+        Actors.erase(i);
     }
 }

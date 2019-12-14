@@ -13,6 +13,7 @@ class ActorController
         PVector GetControlledActorLocation();
         PVector GetControlledActorRotation();
         std::string GetSprite();
+        bool GetAutoMoveStatus();
 
         void Tick();
         void SetAutoMovement(bool);
@@ -21,13 +22,14 @@ class ActorController
         void SetGamemodePtr(GameMode* newGamemodePtr);
         void SetupInput(int PlayerInput);
         void Die();
+        void AutoMovement(ActorController* CurrentController);
 
     protected:
-        void AutoMovement();
         bool MovementPossibility(PVector PossibleLocation);
         Actor* Controller = nullptr;
         GameMode* GamemodePtr = nullptr;
         bool AutoMovement_b = false;
+
 };
 
 #endif // ACTORCONTROLLER_H

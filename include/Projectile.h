@@ -7,7 +7,10 @@ class Projectile : public Actor
 {
     public:
         Projectile();
-        std::string GetSprite();
+        Projectile(PVector Loc, PVector Rot);
+
+        bool GetMoveStatus();
+        virtual std::string GetSprite() override;
 
     protected:
         std::string Sprite;

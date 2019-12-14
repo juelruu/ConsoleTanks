@@ -2,12 +2,15 @@
 #include "Actor.h"
 #include "Projectile.h"
 
-ActorController::ActorController(Actor* newActor = nullptr)
+ActorController::ActorController(Actor* newActor)
 {
     if(newActor != nullptr)
         Controller = newActor;
     else
         Controller = new Actor;
+
+    //std::cout << GamemodePtr << std::endl;
+    AutoMovement_b = Controller->GetMoveStatus();
 }
 
 ActorController::~ActorController()
@@ -23,20 +26,20 @@ void ActorController::SetupInput(int PlayerInput)
     switch(PlayerInput)
     {
     case 235:
-        tmpLocation = Controller->GetActorLocation();
+        tmpLocation = GetControlledActorLocation();
         tmpRotation = PVector(0, 1);
 
         tmpLocation += tmpRotation;
         break;
     case 230:
-        tmpLocation = Controller->GetActorLocation();
+        tmpLocation = GetControlledActorLocation();
         tmpRotation = PVector(0, -1);
 
         tmpLocation += tmpRotation;
         break;
 
     case 228:
-        tmpLocation = Controller->GetActorLocation();
+        tmpLocation = GetControlledActorLocation();
         tmpRotation = PVector(-1, 0);
 
         tmpLocation += tmpRotation;
@@ -44,7 +47,7 @@ void ActorController::SetupInput(int PlayerInput)
         break;
 
     case 162:
-        tmpLocation = Controller->GetActorLocation();
+        tmpLocation = GetControlledActorLocation();
         tmpRotation = PVector(1, 0);
 
         tmpLocation += tmpRotation;
@@ -52,39 +55,40 @@ void ActorController::SetupInput(int PlayerInput)
         break;
 
     case 32:{
-        tmpLocation = Controller->GetActorLocation();
-        tmpRotation = Controller->GetActorRotation();
+        tmpLocation = GetControlledActorLocation();
+        tmpRotation = GetControlledActorRotation();
 
-        Projectile* proj = new Projectile;
         PVector projetileLocation = tmpLocation;
         projetileLocation += tmpRotation;
         projetileLocation += tmpRotation;
 
-        proj->SetActorLocation(projetileLocation);
-        proj->SetActorRotation(tmpRotation);
-
         if(MovementPossibility(projetileLocation))
-            GamemodePtr->AddActor(proj);
+            GamemodePtr->AddActor(projetileLocation, tmpRotation);
         break;
     }
 
     default:
-        tmpLocation = Controller->GetActorLocation();
-        tmpRotation = Controller->GetActorRotation();
+        tmpLocation = GetControlledActorLocation();
+        tmpRotation = GetControlledActorRotation();
         break;
     }
 
-    if(MovementPossibility(tmpLocation))
+    if(PlayerInput != 32 and PlayerInput != 0)
     {
-        if(PlayerInput == 162 or PlayerInput == 228)
-            tmpLocation -= tmpRotation;
-        Controller->SetActorLocation(tmpLocation);
-        Controller->SetActorRotation(tmpRotation);
+        if(MovementPossibility(tmpLocation))
+        {
+            if(PlayerInput == 162 or PlayerInput == 228)
+                tmpLocation -= tmpRotation;
+            Controller->SetActorLocation(tmpLocation);
+            Controller->SetActorRotation(tmpRotation);
+        }
     }
+
 }
 
 bool ActorController::MovementPossibility(PVector PossibleLocation)
 {
+    //std::cout << this << "----" << "ANOTHING" << std::endl;
     return GamemodePtr->MovementPossibility(PossibleLocation);
 }
 
@@ -118,28 +122,41 @@ std::string ActorController::GetSprite()
     return Controller->GetSprite();
 }
 
-void ActorController::SetAutoMovement(bool var)
-{
-    AutoMovement_b = var;
-}
-
 void ActorController::Tick()
 {
+    //std::cout << this << "-" << GetAutoMoveStatus() << std::endl;
     if(AutoMovement_b)
-        AutoMovement();
+        AutoMovement(this);
 }
 
-void ActorController::AutoMovement()
+void ActorController::AutoMovement(ActorController* CurrentController)
 {
-    PVector tmpLocation = GetControlledActorLocation();
-    tmpLocation += GetControlledActorRotation();
-    tmpLocation += GetControlledActorRotation();
-    if(MovementPossibility(tmpLocation))
-        SetActorLocation(tmpLocation);
-    else
-        Die();
+    if(GetAutoMoveStatus())
+    {
+        //std::cout << CurrentController << "-" << "AutoMove" << CurrentController->GetAutoMoveStatus() << std::endl;
+
+        PVector tmpLocation = CurrentController->GetControlledActorLocation();
+        PVector tmpRotation = CurrentController->GetControlledActorRotation();
+
+        tmpLocation += PVector(tmpRotation.X, tmpRotation.Y);
+
+        // TODO Crush!!! is under this line
+       // std::cout << "HelloAutoMove" << tmpLocation.X << "-" << tmpLocation.Y << std::endl;
+        if(CurrentController->MovementPossibility(tmpLocation))
+        {
+            //std::cout << "NOTHING" << std::endl;
+            CurrentController->SetActorLocation(tmpLocation);
+        }
+        else
+            Die();
+    }
 }
 void ActorController::Die()
 {
     GamemodePtr->DeleteActor(this);
+}
+
+bool ActorController::GetAutoMoveStatus()
+{
+    return AutoMovement_b;
 }

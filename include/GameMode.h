@@ -2,6 +2,7 @@
 #include "CustomStructures.h"
 #define GAMEMODE_H
 
+class Actor;
 class ActorController;
 
 class GameMode
@@ -11,7 +12,9 @@ class GameMode
         virtual ~GameMode();
 
         void Play();
-        void AddActor(class Actor* newActor);
+
+        void AddActor(PVector Loc, PVector Rot);
+
         void DeleteActor(class ActorController* DController);
         bool GetGameStatus();
         void SetPlayerInput();
@@ -28,6 +31,7 @@ class GameMode
         bool GameStatus = true;
 
         std::vector<ActorController*> Actors;
+        std::vector<Actor*> nActor;
         int InputBuffer;
 };
 

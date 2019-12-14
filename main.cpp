@@ -13,7 +13,7 @@ int main()
     switch(MenuStatus)
     {
         case 1:
-            GameMode* Game = new GameMode(0);
+            GameMode* Game = new GameMode(3);
             while(Game->GetGameStatus())
             {
                 Game->Play();

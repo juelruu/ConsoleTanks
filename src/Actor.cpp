@@ -13,6 +13,11 @@ Actor::~Actor()
 
 }
 
+bool Actor::GetMoveStatus()
+{
+    return AutoMove_b;
+}
+
 void Actor::SetActorLocation(PVector newLocation)
 {
     Location = newLocation;
